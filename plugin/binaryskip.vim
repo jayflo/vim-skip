@@ -5,312 +5,333 @@
 " ====[ Options ]====
 if ( exists("g:binaryskip_disable") && g:binaryskip_disable )
     finish
-endif
+en
 let g:binaryskip_disable = 0
 
 if !exists("g:binaryskip_disable_default_maps")
     let g:binaryskip_disable_default_maps = 0
-endif
+en
 
 if !exists("g:binaryskip_multiplier") || g:binaryskip_multiplier < 0
     let g:binaryskip_multiplier = 0.5
-endif
-let s:factor = g:binaryskip_multiplier
+en
 
 if !exists("g:binaryskip_mode")
     let g:binaryskip_mode = "normal"
-endif
+en
 
-if !exists("g:binaryskip_pass_through")
-    let g:binaryskip_pass_through = 1
-endif
+if !exists("g:binaryskip_split_wraptocenter")
+    let g:binaryskip_split_wraptocenter = 1
+en
 
-if !exists("g:binaryskip_continuation")
-    let g:binaryskip_continuation = 0
-endif
+if !exists("g:binaryskip_split_passthroughcenter")
+    let g:binaryskip_split_passthroughcenter = 0
+en
+
+if !exists("g:binaryskip_helix")
+    let g:binaryskip_helix = 0
+en
 
 if !exists("g:binaryskip_ignore_initial_ws")
     let g:binaryskip_ignore_initial_ws= 1
-endif
+en
 
 if !exists("g:binaryskip_ignore_trailing_ws")
     let g:binaryskip_ignore_trailing_ws= 1
-endif
+en
 
 " ====[ Helpers ]====
-if s:factor > 1
-    s:factor = 1.0/(s:factor * 1.0)
-endif
+let s:factor = g:binaryskip_multiplier
 
-if g:binaryskip_continuation
-    let s:nextfirstcol = "0j"
-    let s:prevfirstcol = "0k"
+if g:binaryskip_helix
+    let s:safedown = "j"
+    let s:safeup = "k"
     let s:safenext = 1
     let s:safeprevious = -1
 else
-    let s:nextfirstcol = "0"
-    let s:prevfirstcol = "0"
+    let s:safedown = ""
+    let s:safeup = ""
     let s:safenext = 0
     let s:safeprevious = 0
-endif
+en
 
 let s:current = 0
-let s:cursor = ""
+let s:nowrap = ""
 let s:firstcol = "0"
 let s:switchmode = "normal"
 
 " ====[ Getters ]====
-function! s:Cursor()
+fu! s:Cursor()
     return getpos('.')[2]
-endfunction
+endf
 
-function! s:Line(offset)
+fu! s:Line(offset)
     return getline(line('.') + a:offset)
-endfunction
+endf
 
-function! s:DistanceTo(destination)
+fu! s:DistanceTo(destination)
     return abs(s:Cursor()-a:destination)
-endfunction
+endf
 
-function! s:Scale(value, by_x)
+fu! s:Scale(value, by_x)
     return float2nr(ceil(a:value * 1.0 * a:by_x))
-endfunction
+endf
 
-function! s:BeginningOf(line)
+fu! s:BeginningOf(line)
     if g:binaryskip_ignore_initial_ws
         return match(a:line,'\S')+1
     else
         return 0
-    endif
-endfunction
+    en
+endf
 
-function! s:EndOf(line)
+fu! s:EndOf(line)
     if g:binaryskip_ignore_trailing_ws
         return strlen(substitute(a:line,'\s\+$','','g'))
     else
         return strlen(a:line)
-    endif
-endfunction
+    en
+endf
 
-function! s:CenterOf(line)
+fu! s:CenterOf(line)
     let l:beginningofline = s:BeginningOf(a:line)
     return l:beginningofline + s:Scale(s:EndOf(a:line)-l:beginningofline, 0.5)
-endfunction
+endf
 
 " ====[ Setters ]====
-"                str , int     , str
-function! s:Skip(wrap, distance, direction)
-execute "normal! ".a:wrap.string(a:distance).a:direction
-endfunction
+"          int     , str
+fu! s:Skip(distance, direction)
+    execute "normal! ".string(a:distance).a:direction
+endf
 
-" ====[ Center of Line ]====
-function! s:ToCenter()
-    return s:Skip(s:firstcol, s:CenterOf(s:Line(s:current)), "l")
-endfunction
+fu! s:ToCenter(...)
+    normal! 0
+    if a:1 == "frombeginning"
+        execute "normal! ".s:safeup
+        call s:Skip(s:CenterOf(s:Line(s:safeprevious)), "l")
+    elseif a:1 == "fromend"
+        execute "normal! ".s:safedown
+        call s:Skip(s:CenterOf(s:Line(s:safenext)), "l")
+    else
+        call s:Skip(s:CenterOf(s:Line(s:current)), "l")
+    en
+endf
+
+fu! s:Wrap(destination)
+    if a:destination == "tobeginning"
+        if g:binaryskip_ignore_initial_ws
+            execute "normal! ".s:safedown."^"
+        else
+            execute "normal! ".s:safedown."0"
+        en
+    elseif a:destination == "toend"
+        if g:binaryskip_ignore_trailing_ws
+            execute "normal! ".s:safeup."g_"
+        else
+            execute "normal! ".s:safeup."$"
+        en
+    elseif a:destination == "tocenterfrombeginning"
+        call s:ToCenter("frombeginning")
+    else
+        call s:ToCenter("fromend")
+    en
+endf
 
 " ====[ Normal Mode ]====
-function! s:BinarySkipForward()
+fu! s:NormalForward()
     let l:dist = s:DistanceTo(s:EndOf(s:Line(s:current)))
     if l:dist
-        call s:Skip(s:cursor, s:Scale(l:dist, s:factor), "l")
+        call s:Skip(s:Scale(l:dist, s:factor), "l")
     else
-        call s:Skip(s:nextfirstcol, s:BeginningOf(s:Line(s:safenext)), "l")
-    endif
-endfunction
+        call s:Wrap("tobeginning")
+    en
+endf
 
-function! s:BinarySkipBackward()
+fu! s:NormalBackward()
     let l:dist = s:DistanceTo(s:BeginningOf(s:Line(s:current)))
     if l:dist
-        call s:Skip(s:cursor, s:Scale(l:dist, s:factor), "h")
+        call s:Skip(s:Scale(l:dist, s:factor), "h")
     else
-        call s:Skip(s:prevfirstcol, s:EndOf(s:Line(s:safeprevious)), "l")
-    endif
-endfunction
+        call s:Wrap("toend")
+    en
+endf
 
-" " ====[ Split Mode ]====
-" function! s:BinarySkipForwardSplit()
-"     let l:cursor = s:Cursor()
-"     let l:center= s:CenterOf(s:Line(s:current))
+" ====[ Split Mode ]====
+fu! s:SplitForward()
+    let l:cursor = s:Cursor()
+    let l:center= s:CenterOf(s:Line(s:current))
 
-"     if l:cursor < l:center
-"         call s:Skip(s:cursor, s:Scale(l:center-l:cursor,s:factor), "l")
-"     elseif l:cursor > l:center
-"         let l:dist = s:DistanceTo(s:EndOf(s:Line(s:current)))
+    if l:cursor < l:center
+        call s:Skip(s:Scale(l:center-l:cursor,s:factor), "l")
+    elseif l:cursor > l:center
+        let l:dist = s:DistanceTo(s:EndOf(s:Line(s:current)))
 
-"         if l:dist
-"             call s:Skip(s:cursor, s:Scale(l:dist,s:factor), "l")
-"         else
-"             if g:binaryskip_pass_through
-"                 call s:Skip(s:nextfirstcol, s:BeginningOf(s:Line(s:safenext)), "l")
-"             else
-"                 call s:Skip(s:firstcol, l:center, "l")
-"             endif
-"         endif
-"     else
-"         if g:binaryskip_pass_through
-"             call s:Skip(s:cursor, s:Scale(s:DistanceTo(s:EndOf(s:Line(s:current))),s:factor), "l")
-"         else
-"             call s:Skip(s:firstcol, s:BeginningOf(s:Line(s:current)), "l")
-"         endif
-"     endif
-" endfunction
+        if l:dist
+            call s:Skip(s:Scale(l:dist,s:factor), "l")
+        else
+            if g:binaryskip_split_wraptocenter
+                call s:Wrap("tocenterfromend")
+            else
+                call s:Wrap("tobeginning")
+            en
+        en
+    else
+        if g:binaryskip_split_passthroughcenter
+            call s:Skip(s:Scale(s:DistanceTo(s:EndOf(s:Line(s:current))),s:factor), "l")
+        else
+            call s:Wrap("tobeginning")
+        en
+    en
+endf
 
-" function! s:BinarySkipBackwardSplit()
-"     let l:cursor = s:Cursor()
-"     let l:center= s:CenterOf(s:Line(s:current))
+fu! s:SplitBackward()
+    let l:cursor = s:Cursor()
+    let l:center= s:CenterOf(s:Line(s:current))
 
-"     if l:cursor > l:center
-"         call s:Skip(s:cursor, s:Scale(l:cursor-l:center,s:factor), "h")
-"     elseif l:cursor < l:center
-"         let l:dist = s:DistanceTo(s:BeginningOf(s:Line(s:current)))
+    if l:cursor > l:center
+        call s:Skip(s:Scale(l:cursor-l:center,s:factor), "h")
+    elseif l:cursor < l:center
+        let l:dist = s:DistanceTo(s:BeginningOf(s:Line(s:current)))
 
-"         if l:dist
-"             call s:Skip(s:cursor, s:Scale(l:dist,s:factor), "h")
-"         else
-"             if g:binaryskip_pass_through
-"                 call s:Skip(s:prevfirstcol, s:EndOf(s:Line(s:safeprevious)), "l")
-"             else
-"                 call s:Skip(s:firstcol, l:center, "l")
-"             endif
-"         endif
-"     else
-"         if g:binaryskip_pass_through
-"             call s:Skip(s:cursor, s:Scale(s:DistanceTo(s:BeginningOf(s:Line(s:current))),s:factor), "h")
-"         else
-"             call s:Skip(s:firstcol, s:EndOf(s:Line(s:current)), "l")
-"         endif
-"     endif
-" endfunction
+        if l:dist
+            call s:Skip(s:Scale(l:dist,s:factor), "h")
+        else
+            if g:binaryskip_split_wraptocenter
+                call s:Wrap("tocenterfrombeginning")
+            else
+                call s:Wrap("toend")
+            en
+        en
+    else
+        if g:binaryskip_split_passthroughcenter
+            call s:Skip(s:Scale(s:DistanceTo(s:BeginningOf(s:Line(s:current))),s:factor), "h")
+        else
+            call s:Wrap("toend")
+        en
+    en
+endf
 
-" " ====[ Helix Mode ]====
-" function! s:BinarySkipForwardHelix()
-"     let l:cursor = s:Cursor()
-"     let l:center= s:CenterOf(s:Line(s:current))
+" ====[ Helix Mode ]====
+fu! s:AntiForward()
+    let l:cursor = s:Cursor()
+    let l:center= s:CenterOf(s:Line(s:current))
 
-"     if l:cursor < l:center
-"         call s:Skip(s:cursor, s:Scale(l:center-l:cursor,s:factor), "l")
-"     else
-"         let l:distancetoend = s:DistanceTo(s:EndOf(s:Line(s:current)))
-"         let l:beginningofline = s:BeginningOf(s:Line(s:safenext))
-"         if g:binaryskip_continuation
-"             l:center = s:CenterOf(s:Line(s:safenext))
-"         endif
-"         let l:skipdist = s:Scale(l:distancetoend + (l:center - l:beginningofline),s:factor)
+    if l:cursor < l:center
+        call s:Skip(s:Scale(l:center-l:cursor,s:factor), "l")
+    else
+        let l:distancetoend = s:DistanceTo(s:EndOf(s:Line(s:current)))
+        let l:beginningofline = s:BeginningOf(s:Line(s:safenext))
+        if g:binaryskip_helix
+            l:center = s:CenterOf(s:Line(s:safenext))
+        en
+        let l:skipdist = s:Scale(l:distancetoend + (l:center - l:beginningofline),s:factor)
 
-"         if l:skipdist <= l:distancetoend
-"             call s:Skip(s:cursor, l:skipdist, "l")
-"         else
-"             call s:Skip(s:nextfirstcol , s:BeginningOf(s:Line(s:safenext)) + (l:skipdist - l:distancetoend), "l")
-"         endif
-"     endif
-" endfunction
+        if l:skipdist <= l:distancetoend
+            call s:Skip(l:skipdist, "l")
+        else
+            call s:Wrap("tobeginning")
+            call s:Skip(l:skipdist - l:distancetoend, "l")
+        en
+    en
+endf
 
-" function! s:BinarySkipBackwardHelix()
-"     let l:cursor = s:Cursor()
-"     let l:center= s:CenterOf(s:Line(s:current))
+fu! s:AntiBackward()
+    let l:cursor = s:Cursor()
+    let l:center= s:CenterOf(s:Line(s:current))
 
-"     if l:cursor > l:center
-"         call s:Skip(s:cursor, s:Scale(l:cursor-l:center,s:factor), "h")
-"     else
-"         let l:distancetobeginning = s:DistanceTo(s:BeginningOf(s:Line(s:current)))
-"         let l:endofline = s:EndOf(s:Line(s:safeprevious))
-"         if g:binaryskip_continuation
-"             l:center = s:CenterOf(s:Line(s:safeprevious))
-"         endif
-"         let l:skipdist = s:Scale(l:distancetobeginning + (l:endofline-l:center),s:factor)
+    if l:cursor > l:center
+        call s:Skip(s:Scale(l:cursor-l:center,s:factor), "h")
+    else
+        let l:distancetobeginning = s:DistanceTo(s:BeginningOf(s:Line(s:current)))
+        let l:endofline = s:EndOf(s:Line(s:safeprevious))
+        if g:binaryskip_helix
+            l:center = s:CenterOf(s:Line(s:safeprevious))
+        en
+        let l:skipdist = s:Scale(l:distancetobeginning + (l:endofline-l:center),s:factor)
 
-"         if l:skipdist <= l:distancetobeginning
-"             call s:Skip(s:cursor, l:skipdist, "h")
-"         else
-"             call s:Skip(s:nextfirstcol , s:EndOf(s:Line(s:safeprevious)) - (l:skipdist-l:distancetobeginning), "l")
-"         endif
-"     endif
-" endfunction
+        if l:skipdist <= l:distancetobeginning
+            call s:Skip(l:skipdist, "h")
+        else
+            call s:Wrap("toend")
+            call s:Skip(l:skipdist-l:distancetobeginning, "h")
+        en
+    en
+endf
 
-" " ====[ Fixed Skip Mode ]====
-" function! s:BinarySkipForwardFixed()
-"     let l:line = s:Line(s:current)
-"     let l:distancetoend = s:DistanceTo(s:EndOf(l:line))
-"     let l:skipdist = s:Scale(strlen(l:line),s:factor)
+" ====[ Fixed Skip Mode ]====
+fu! s:FixedForward()
+    let l:line = s:Line(s:current)
+    let l:distancetoend = s:DistanceTo(s:EndOf(l:line))
+    let l:skipdist = s:Scale(strlen(l:line),s:factor)
 
-"     if l:skipdist <= l:distancetoend
-"         call s:Skip(s:cursor, l:skipdist, "l")
-"     else
-"         call s:Skip(s:nextfirstcol, s:BeginningOf(s:Line(s:safenext)) + (l:skipdist - l:distancetoend), "l")
-"     endif
-" endfunction
+    if l:skipdist <= l:distancetoend
+        call s:Skip(l:skipdist, "l")
+    else
+        call s:Wrap("tobeginning")
+        call s:Skip(l:skipdist - l:distancetoend, "l")
+    en
+endf
 
-" function! s:BinarySkipBackwardFixed()
-"     let l:line = s:Line(s:current)
-"     let l:distancetobeginning = s:DistanceTo(s:BeginningOf(l:line))
-"     let l:skipdist = s:Scale(strlen(l:line),s:factor)
+fu! s:FixedBackward()
+    let l:line = s:Line(s:current)
+    let l:distancetobeginning = s:DistanceTo(s:BeginningOf(l:line))
+    let l:skipdist = s:Scale(strlen(l:line),s:factor)
 
-"     if l:skipdist <= l:distancetobeginning
-"         call s:Skip(s:cursor, l:skipdist, "h")
-"     else
-"         call s:Skip(s:prevfirstcol, s:EndOf(s:Line(s:safeprevious)) + (l:skipdist - l:distancetobeginning), "l")
-"     endif
-" endfunction
+    if l:skipdist <= l:distancetobeginning
+        call s:Skip(l:skipdist, "h")
+    else
+        call s:Wrap("toend")
+        call s:Skip(l:skipdist - l:distancetobeginning, "h")
+    en
+endf
 
 " ====[ Dynamic Option Changing ]====
-function! s:IncreaseMultiplier()
+fu! s:IncreaseMultiplier()
     s:factor += 1.0
-endfunction
+endf
 
-function! s:DecreaseMultiplier()
+fu! s:DecreaseMultiplier()
     s:factor -= 1.0
-endfunction
+endf
 
-function! s:SetMaps(...)
+fu! s:SetMaps(...)
     if a:0
-        if a:1 == "fixed"
-            nmap s <Plug>FixedForward
-            nmap S <Plug>FixedBackward
-        elseif a:1 == "split"
-            nmap s <Plug>SplitForward
-            nmap S <Plug>SplitForward
-        elseif a:1 == "helix"
-            nmap s <Plug>HelixForward
-            nmap S <Plug>HelixBackward
-        else
-            nmap s <Plug>NormalForward
-            nmap S <Plug>NormalBackward
-        endif
+        execute 'nmap s <Plug>'.toupper(a:1).'Forward'
+        execute 'nmap S <Plug>'.toupper(a:1).'Backward'
     else
         if s:switchmode == "normal"
             s:switchmode = "split"
         elseif s:switchmode == "split"
-            s:switchmode = "helix"
-        elseif s:switchmode == "helix"
+            s:switchmode = "anti"
+        elseif s:switchmode == "anti"
             s:switchmode = "fixed"
         elseif s:switchmode == "fixed"
             s:switchmode = "normal"
         else
             s:switchmode = "fixed"
-        endif
+        en
         call s:SetMaps(s:switchmode)
-    endif
-
-    nmap gs <Plug>ToCenter
-endfunction
+    en
+endf
 
 " ====[ Bindings ]====
 nnoremap <silent> <Plug>ToCenter                :<C-u>call <SID>ToCenter()<CR>
-nnoremap <silent> <Plug>NormalForward :<C-u>call <SID>BinarySkipForward()<CR>
-nnoremap <silent> <Plug>NormalBackward :<C-u>call <SID>BinarySkipBackward()<CR>
-nnoremap <silent> <Plug>HelixForward  :<C-u>call <SID>BinarySkipForwardHelix()<CR>
-nnoremap <silent> <Plug>HelixBackward :<C-u>call <SID>BinarySkipBackwardHelix()<CR>
-nnoremap <silent> <Plug>SplitForward  :<C-u>call <SID>BinarySkipForwardSplit()<CR>
-nnoremap <silent> <Plug>SplitBackward :<C-u>call <SID>BinarySkipBackwardSplit()<CR>
-nnoremap <silent> <Plug>FixedForward  :<C-u>call <SID>BinarySkipForwardFixed()<CR>
-nnoremap <silent> <Plug>FixedBackward :<C-u>call <SID>BinarySkipBackwardFixed()<CR>
-nnoremap <silent> <Plug>SwitchMode    :<C-u>call <SID>SetMaps()<CR>
-nnoremap <silent> <Plug>IncreaseMultiplier    :<C-u>call <SID>IncreaseMultiplier()<CR>
-nnoremap <silent> <Plug>DecreaseMultiplier    :<C-u>call <SID>DecreaseMultiplier()<CR>
+nnoremap <silent> <Plug>NORMALForward           :<C-u>call <SID>NormalForward()<CR>
+nnoremap <silent> <Plug>NORMALBackward          :<C-u>call <SID>NormalBackward()<CR>
+nnoremap <silent> <Plug>ANTIForward             :<C-u>call <SID>AntiForward()<CR>
+nnoremap <silent> <Plug>ANTIBackward            :<C-u>call <SID>AntiBackward()<CR>
+nnoremap <silent> <Plug>SPLITForward            :<C-u>call <SID>SplitForward()<CR>
+nnoremap <silent> <Plug>SPLITBackward           :<C-u>call <SID>SplitBackward()<CR>
+nnoremap <silent> <Plug>FIXEDForward            :<C-u>call <SID>FixedForward()<CR>
+nnoremap <silent> <Plug>FIXEDBackward           :<C-u>call <SID>FixedBackward()<CR>
+nnoremap <silent> <Plug>SwitchMode              :<C-u>call <SID>SetMaps()<CR>
+nnoremap <silent> <Plug>IncreaseMultiplier      :<C-u>call <SID>IncreaseMultiplier()<CR>
+nnoremap <silent> <Plug>DecreaseMultiplier      :<C-u>call <SID>DecreaseMultiplier()<CR>
 
 if !hasmapto('<Plug>BinarySkipForward') && !g:binaryskip_disable_default_maps
+    nmap gs <Plug>ToCenter
     call s:SetMaps(g:binaryskip_mode)
-endif
+en
 
 
 
