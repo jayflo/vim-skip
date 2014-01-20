@@ -258,6 +258,8 @@ These can help find a good multiplier to fit what "mid-range" means to YOU.  Als
 Outro
 =====
 
+A special thanks to the nice people at #vim for answering my stupid questions.  Especially accolade, Raimondi and sakkemo!
+
 Constructive feedback would be great!  This is my first vim script and I am a
 newbie to both vim and programming in general.  It is my intent for this plugin
 to provide a new way of thinking about motions, not necessarly to showcase my 
