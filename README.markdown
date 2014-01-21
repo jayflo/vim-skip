@@ -4,7 +4,7 @@ Vim Skip
 TLDR
 ----
 
-``s`` - skips *forward* half the distance between itself and the end of the line.
+``s`` - skips *forward* half the distance between the cursor and the end of the line.
 ```
 *    cursor
 ---> movement of cursor after press of s
@@ -14,7 +14,7 @@ Press s once to get to here..\/   again...  \/ ...  \/ .....etc.
 |-----#--########-###-----##################-----#####----|  <--- a line in buffer
 ```
 
-``S`` - skips *backward* half the distance between itself and the beginning of the line.
+``S`` - skips *backward* half the distance between the cursor and the beginning of the line.
 ```
 *     cursor
 <---- movement of cursor after press of S
