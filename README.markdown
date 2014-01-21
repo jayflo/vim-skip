@@ -28,7 +28,7 @@ Press s once to get to here..\/   again...  \/ ...  \/ .....etc.
 
 This plugin provides 3 other ways to skip around the current line, but this is the default.  Of course, You do not need to start from the beginning/end of the line; the binary skipping happens relative to the cursor.  You can also:
 
-1. move by thirds, fourths or any other fraction
+1. move by thirds, fourths or any other fraction (default is halves, as above)
 2. choose to ignore indenting and trailing white space
 3. skip through one end of the line to wrap to the other
 4. skip through the end of the line to wrap to the center
@@ -52,6 +52,8 @@ tool set allowing the user to tailor a single, *efficient* mid-range motion
 based on their own needs.  Don't get overwhelmed with the modes or options!  It
 is my intention to keep this skipping motion *quick* and *efficient*, while
 still providing enough versatility to fit your working style on many file types.
+
+Thought another way, whenever you would think about skipping rather than a ``w``, ``e``, ``b``, it hopes to provide a motion to get you where you want to go high probability.  To get you where you *exactly* want to go, you would just use ``/`` or ``?`` commands.  Vim-skip must be quicker than these to be efficient!
 
 Installation
 ------------
