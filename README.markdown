@@ -177,13 +177,18 @@ This mode moves the cursor through the ends of the lines *quickly* and slows
 near the center.  It receives its name from the following visual:
 
 ```
-<> = ends of line
-* = center of line          -->||<--             ---><---
+                       A pictorial representation of turning a straight line in a buffer
+                       into a circle by joining the beginning and end of the line.  We then
+                       move the points we logarithmically skip toward to the south pole, then
+                       unwrap.  We now skip slowly toward the center!
+| = ends of line
+* = center of line          --|><|--             ---||---          Anti mode
                            /        \           /        \
- |<---*--->|      ---->   |          |   --->  |          |
- ^         ^               \        /           \        /
- |         |                 ---*--               --|*|-
- skip "slowly" toward these points in normal mode
+ <|---*---|>      ---->   |          |   --->  |          |  ---> |-----<*>-----|
+ ^         ^               \        /           \        /              ^ ^
+ |         |                ---*----             ---<*>--               | |  
+ |         |                                                            | |
+ a line in the buffer where the <,> mark points which we skip slowly toward in normal and anti modes.
 ```
 
 So if you imagine joining the ends of the line, we get a circle.  Then ``s``
