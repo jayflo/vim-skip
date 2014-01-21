@@ -1,5 +1,32 @@
 Vim Skip
 ========
+
+TLDR
+====
+``s`` jumps forward in binary fashion.
+```
+*    cursor
+---> movement of cursor after press of s
+
+Press s once to get to here..\/   again...  \/ ...  \/ .....etc.
+*---------------------------->*------------->*----->|-->
+|-----#--########-###-----##################-----#####----|  <--- a line in buffer
+```
+
+``S`` jumps backward in binary fashion.
+```
+*     cursor
+<---- movement of cursor after press of S
+
+     \/ again\/ again     \/ Press S once from end of line
+ *<--*<------*<-----------*<-------------------------------
+|-----#--########-###-----##################-----#####----|  <--- a line in buffer
+```
+
+``gs`` moves your cursor to the center of the line.
+
+This is just binary skipping across the line.  You can always move by thirds, fourths or whatever other fraction. There are other methods for binary skipping talked about below.  Skipping at ends of the lines wraps to the opposite end, you can wrap to succeeding lines or even back to the center of the line.
+
 Intro
 -----
 
