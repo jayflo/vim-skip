@@ -27,6 +27,7 @@ Press s once to get to here..\/   again...  \/ ...  \/ .....etc.
 ``gs`` moves your cursor to the center of the line.
 
 This plugin provides 3 other ways to skip around the current line, but this is the default.  Of course, You do not need to start from the beginning/end of the line; the binary skipping happens relative to the cursor.  You can also:
+
 1. move by thirds, fourths or any other fraction
 2. choose to ignore indenting and trailing white space
 3. skip through one end of the line to wrap to the other
@@ -40,7 +41,7 @@ Intro
 -----
 
 Vim-skip attempts to provide a "mid-range" movement, between the longer ``$``,
-``0`` and the shorter ``w``, ``W``, ``e``, ``E``, ``b``, ``B``.  It is built to *quickly* move the cursor to parts of the line which can otherwise be difficult to get to.   It is more precise than 
+``0`` and the shorter ``w``, ``W``, ``e``, ``E``, ``b``, ``B``.  It is built to *quickly* move the cursor to parts of the line which can otherwise be difficult to get to, e.g. the middle half of the line.   It is more precise than 
 ``$``, ``0`` while not filling the role of ``w``, ``W``, ``e``, ``E``,
 ``b``, ``B``.  These word/WORD text object motions are *necessary* and vim-skip *does not
 want to* replace them.  Instead, Vim-skip hopes to complement them by providing a fast way to get your cursor nearby any word on the line, no matter how long the line may be.  
