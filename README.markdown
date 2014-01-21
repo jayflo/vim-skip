@@ -3,55 +3,47 @@ Vim Skip
 
 TLDR
 ----
-``s`` jumps forward in binary fashion.
+
+``s`` - skips *forward* half the distance between itself and the end of the line.
 ```
 *    cursor
 ---> movement of cursor after press of s
 
 Press s once to get to here..\/   again...  \/ ...  \/ .....etc.
-*---------------------------->*------------->*----->*-->
+*---------------------------> * -----------> * ---> * ->
 |-----#--########-###-----##################-----#####----|  <--- a line in buffer
 ```
 
-``S`` jumps backward in binary fashion.
+``S`` - skips *backward* half the distance between itself and the beginning of the line.
 ```
 *     cursor
 <---- movement of cursor after press of S
 
-     \/ again\/ again     \/ Press S once from end of line
- *<--*<------*<-----------*<-------------------------------
+                          \/ Press S once from end of line
+ * <- * <---- * <--------- * <-----------------------------
 |-----#--########-###-----##################-----#####----|  <--- a line in buffer
 ```
 
 ``gs`` moves your cursor to the center of the line.
 
-This is just binary skipping across the line.  You do not need to start from the beginning/end of the line; the binary skipping happens relative to the cursor.  You can also move by thirds, fourths or whatever other fraction. You can choose to ignore indenting and trailing white space, skipping at ends of the lines wraps to the opposite end, you can wrap to succeeding lines or even back to the center of the line.  
+This plugin provides 3 other ways to skip around the current line, but this is the default.  Of course, You do not need to start from the beginning/end of the line; the binary skipping happens relative to the cursor.  You can also:
+1. move by thirds, fourths or any other fraction
+2. choose to ignore indenting and trailing white space
+3. skip through one end of the line to wrap to the other
+4. skip through the end of the line to wrap to the center
+5. skip through the end of the line to wrap to the succeeding/preceeding line
 
-There are other interesting methods for working your way across a line below.  
+You can stack options 3,5 or 4,5 to, for example, wrap to the center of the succeeding line by skiping through the end of the current line.  This "logarithmic skipping" is the default functionality of vim-skip but perhaps not the most useful depending on the layout of files you commonly edit.  See the Modes section below for other behaviors.
+ 
 
 Intro
 -----
 
-As a "mid-to-long range" movement, plugins like
-[EasyMotion](https://github.com/Lokaltog/vim-easymotion),
-[Stupid-EasyMotion](https://github.com/joequery/Stupid-EasyMotion) and
-[Sneak](https://github.com/justinmk/vim-sneak) have created "find based"
-motions, i.e. you first initialize the movement, then you are prompted for your
-destination (similar to ``f``, ``F``, ``t``, ``T``, ``/``).  After which, in
-some cases, you use another key to continue the motion, or restart the process
-all together.  These are fantastic plugins, but do not fit my personality.  Thinking
-too much up front really messes up my chi.
-
 Vim-skip attempts to provide a "mid-range" movement, between the longer ``$``,
-``0`` and the shorter ``w``, ``W``, ``e``, ``E``, ``b``, ``B``, in a more
-similar style, i.e. a single key press movement that is repeatable by pressing
-the same key.  It is meant to move across lines *quickly*, be more accurate than
-``$``, ``0`` while not stepping on the toes of ``w``, ``W``, ``e``, ``E``,
-``b``, ``B``.  These "smaller" motions are *necessary* and vim-skip *does not
-want to* replace them.  Instead, Vim-skip hopes to replace motions such as
-``WWWwww``, ``Ww5w`` and ``$BBww`` with 1-2 quick key strokes.  As such it may
-not be *as precise* as the aforementioned plugins, but with a little
-experimenting and tweaking, you will see the speed benefit!
+``0`` and the shorter ``w``, ``W``, ``e``, ``E``, ``b``, ``B``.  It is built to *quickly* move the cursor to parts of the line which can otherwise be difficult to get to.   It is more precise than 
+``$``, ``0`` while not filling the role of ``w``, ``W``, ``e``, ``E``,
+``b``, ``B``.  These word/WORD text object motions are *necessary* and vim-skip *does not
+want to* replace them.  Instead, Vim-skip hopes to complement them by providing a fast way to get your cursor nearby any word on the line, no matter how long the line may be.  
 
 Though there are multiple options and modes, Vim-skip *does not attempt to
 provide* you many mid-range motions!  Rather, it strives to provide a minimal
@@ -70,17 +62,13 @@ Using your favorite package manager, for example see
 The "Line"
 ----------
 
-Vim-skip moves the cursor based on the current (and sometimes the next/prev)
-"line's" length.  The variables ``g:vimskip_ignore_initial_ws`` and
-``g:vimskip_ignore_trailing_ws`` define the "line" based on your preference.
-All future refernces to the "line" will take into account your settings of these
-variables.
+Vim-skip provides two options which allow you to ignore intial/trailing whitespace.  Once your cursor lies inside the line you define, you won't skip outside of it.  This works well for files which may have a lot of indentation.
 
 ```
 a)      |--------------------------------------------|            # = non-whitespace character
 b) |-------------------------------------------------|            _ = whitespace
 c)      |--------------------------------------------------|
-d) |____#__#######_##_#########_##################_###_____| <---- physical line in buffer
+d) |____#__#######_##_#########_##################_###_____| <---- a line in buffer
 
 
     g:vimskip_ignore_initial_ws |  g:vimskip_ignore_trailing_ws
@@ -91,8 +79,8 @@ c |             1               |             0
 d |             0               |             0
 ```
 
-Binds (mappings)
-----------------
+Key Maps
+--------
 
 The way you "skip" forward or backward depends on your mode (see below) and the
 options you have set.
@@ -108,20 +96,13 @@ The distance your cursor skips always (except in fixed mode) depends on its
 position in the line.  Fractions will always represent the *actual* position of
 the cursor in the line as a fraction of the line's length, e.g. ``0``, ``1/2``
 and ``1`` mean the cursor is at the beginning, middle and end of the line
-respectively.  To give examples of how sequences like ``sS`` behave, I'll write
+respectively.  
+
+To give brief examples of how sequences like ``sS`` behave, I'll write
 ``0 --s--> 1/2 --S--> 1/4`` to mean "first press ``s`` then ``S`` move your
 cursor *from* the beginning of the line, *to* the middle of the line, *then* to
-(the position ) ``1/4`` (of the line's length from the beginning) of the line.
-Of course, you could as well stop after the first ``s`` to be at the middle of
-the line.  These examples just showcase how ``s`` and ``S`` get you places.
-
-This is a lot of talking for some movements that are quite simple.  So lets get
-started.
-
-* ``gs`` - always moves your cursor to the center of the line, aka ``1/2``
-
-The behavior of wrapping to beginning/end of the line and the "skip multiplier"
-are customizable.
+``1/4`` of the line's length from the beginning of the line.
+Of course, this also shows that stopping after the first ``s`` will leave your cursor at the middle of the line.  These examples are given to showcase how a couple presses of ``s`` and ``S`` get to predetermined spots quickly.
 
 Normal
 ------
