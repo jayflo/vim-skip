@@ -114,8 +114,8 @@ Normal
 line quickly and slows down near the beginning/end of the line.
 
 * ``s`` - skips *forward* half (default, can be changed.  Applicable for every
-  mode) the distance between itself and the end of the line.
-* ``S`` - skips *backward* half the distance between itself and the
+  mode) the distance between the cursor and the end of the line.
+* ``S`` - skips *backward* half the distance between the cursor and the
   beginning of the line.
 
 **Examples**
@@ -123,10 +123,7 @@ line quickly and slows down near the beginning/end of the line.
 * ``0 --s--> 1/2 --S--> 1/4``
 * ``1 --S--> 1/2 --s--> 3/4``
 * ``anywhere --gs--> 1/2 --s--> 3/4``
-* ``1 --s--> 0`` and ``0 --S--> 1``, so that jumping forward (resp. backward)
-  from the end (resp. beginning) of the line wraps to the beginning (resp. end)
-  of the line.
-
+* ``1 --s--> 0`` and ``0 --S--> 1``, so that skipping forward through the end of the line wraps you to the beginning of the line (analagously for skipping backward through the beginning).
 Split
 -----
 
@@ -142,8 +139,6 @@ quickly.
     * center, when the cursor is in the second half of the line
     * beginning of the line, when the cursor is in the first half of the line
 
-The wrapping behavior (skipping forward/backward and the beginning/end of
-line/center) is customizable.
 
 **Examples**
 * ``0 --s--> 1/4 --s--> 3/8``
@@ -155,8 +150,8 @@ line/center) is customizable.
 By default, tapping ``s`` from the beginning of the line will eventually allow
 you to "pass through" to the second half of the line (likewise for ``S`` moving
 from the second half).  This is customizable, however, this would take more
-``s`` presses than one would want to.  If it is your goal to get to the center,
-simply ``gs``, or to the second half of the line ``gss`` or ``$s``.
+``s`` presses than one would want to actually use.  If it is your goal to get to the center,
+simply ``gs``, or to the second half of the line ``gss`` or ``$S``.
 
 Fixed
 -----
@@ -194,8 +189,8 @@ near the center.  It receives its name from the following visual:
 So if you imagine joining the ends of the line, we get a circle.  Then ``s``
 skips counter-clockwise and ``S`` clockwise.  In normal mode, both skip half the
 arc length from their current position to the north pole.  In anti(podal) mode,
-simply move point which we skip toward to the south pole (the antipodal point of
-the circle) which is the center of the line.
+simply move the point which we skip toward to the south pole (the antipodal point of
+the circle) which is the center of the line!
 
 * ``s`` - skip forward , wrap if necessary, half the distance between the cursor
   and the:
@@ -208,9 +203,9 @@ the circle) which is the center of the line.
     * beginning of the line + (length of second half of line), when the cursor
       lies in the first half of the line.
 
-Both skips are best understood using the circle picture above still noting that
+Both skips are best understood using the circle analogy above still noting that
 ``s`` skips counter-clockwise, ``S`` clockwise and that skips move half the arc
-length between the current position and the south pole.
+length between the current position and the south pole (which is the center of the line).
 
 **Examples**
 * ``0 --s--> 1/4 --s--> 3/8``
@@ -219,17 +214,16 @@ length between the current position and the south pole.
 * ``anywhere --gs--> 1/2 --s--> 1``
 * ``anywhere --gs--> 1/2 --S--> 0``
 
-This mode may seem awkward, but it has its advantages.  In normal mode, the
+This mode may seem awkward, but it may be the most advantageous.  In normal mode, the
 cursor jumps across the center quickly,  and becomes more accurate near the
-ends.  But one could argue that "around the center" is where a mid-range motion
-should spend its time.  Split mode solves the "center" problem, but movement is
+ends.  But one could argue the movement "near the center" should be a mid-range movement's forte'.  Split mode allows movement near the center to be more precise, but movement is
 slowed due to the line being "chopped in half".
 
 Anti mode, on the other hand, has a hard time getting to the ends of the line
 (unless you commonly start from ``1/2`` and keep ``g:vimskip_multiplier=0.5``)
-where we already have ``$`` and ``0`` at our disposal.  Find a sweet spot for
+where we already have ``$`` and ``0`` at our disposal.  Finding a personal "sweet spot" for
 ``g:vimskip_multiplier`` in this mode could make it the most efficient of the
-modes.
+modes since it can be configured to have the cursor spend most of its time in the middle half of the line.  For example, ``g:vimskip_multiplier=0.75`` will *always* skip your cursor into the middle half ``[1/4,3/4]`` of the line.  In general, setting ``0.5 < g:vimskip_multiplier <= 0.75`` will produce the best results.
 
 Options
 =======
