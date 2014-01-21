@@ -2,7 +2,7 @@ Vim Skip
 ========
 
 TLDR
-====
+----
 ``s`` jumps forward in binary fashion.
 ```
 *    cursor
