@@ -38,7 +38,7 @@ As a "mid-to-long range" movement, plugins like
 [Sneak](https://github.com/justinmk/vim-sneak) have created "find based"
 motions, i.e. you first initialize the movement, then you are prompted for your
 destination (similar to ``f``, ``F``, ``t``, ``T``, ``/``).  After which, in
-Sneak's case, you use another key to continue the motion, or restart the process
+some cases, you use another key to continue the motion, or restart the process
 all together.  These are fantastic plugins, but do not fit my personality.  Thinking
 too much up front really messes up my chi.
 
