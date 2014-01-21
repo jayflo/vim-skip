@@ -25,7 +25,9 @@ Press s once to get to here..\/   again...  \/ ...  \/ .....etc.
 
 ``gs`` moves your cursor to the center of the line.
 
-This is just binary skipping across the line.  You do not need to start from the beginning/end of the line; the binary skipping happens relative to the cursor.  You can also move by thirds, fourths or whatever other fraction. There are other methods for binary skipping talked about below.  You can choose to ignore indenting and trailing white space, skipping at ends of the lines wraps to the opposite end, you can wrap to succeeding lines or even back to the center of the line.
+This is just binary skipping across the line.  You do not need to start from the beginning/end of the line; the binary skipping happens relative to the cursor.  You can also move by thirds, fourths or whatever other fraction. You can choose to ignore indenting and trailing white space, skipping at ends of the lines wraps to the opposite end, you can wrap to succeeding lines or even back to the center of the line.  
+
+There are other interesting methods for working your way across a line below.  
 
 Intro
 -----
