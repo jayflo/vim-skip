@@ -132,7 +132,7 @@ line quickly and slows down near the beginning/end of the line.
 * ``s`` - skips *forward* half (default, can be changed.  Applicable for every
   mode) the distance between itself and the end of the line.
 * ``S`` - skips *backward* half the distance between itself and the
-  end of the line.
+  beginning of the line.
 
 **Examples**
 * ``0 --s--> 1/2 --s--> 3/4``
