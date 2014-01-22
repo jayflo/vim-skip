@@ -234,6 +234,9 @@ Options
 =======
 * ``g:vimskip_disable_default_maps``: set to 1 to not use the default key
   mappings (``s``, ``S``, ``gs``).  Default 0.
+* ``g:vimskip_mapforwardskip``: key to map forward skip.  Default 's'.
+* ``g:vimskip_mapbackwardskip``: key to map backward skip.  Default 'S'.
+* ``g:vimskip_maptocenter``: key to map movement to center of line.  Default 'gs'.
 * ``g:vimskip_multiplier``: (float) between 0 and 1.  Determines the fraction of
   a distance to skip. Values greater than ``1`` were not intended to be used, 
   though they are not restricted.  You currently cannot skip past the succeeding line

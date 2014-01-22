@@ -5,17 +5,25 @@
 " ====[ Options ]====
 if (exists("g:vimskip_disable") && g:vimskip_disable)
     finish
-en
+end
 let g:vimskip_disable = 0
 
-if !exists("g:vimskip_disable_default_maps") | let g:vimskip_disable_default_maps = 0 | en
-if !exists("g:vimskip_multiplier") || g:vimskip_multiplier < 0 | let g:vimskip_multiplier = 0.5 | en
-if !exists("g:vimskip_mode") | let g:vimskip_mode = "normal" | en
-if !exists("g:vimskip_wraptocenter") | let g:vimskip_wraptocenter = 0 | en
-if !exists("g:vimskip_split_passthroughcenter") | let g:vimskip_split_passthroughcenter = 1 | en
-if !exists("g:vimskip_helix") | let g:vimskip_helix = 0 | en
-if !exists("g:vimskip_ignore_initial_ws") | let g:vimskip_ignore_initial_ws= 1 | en
-if !exists("g:vimskip_ignore_trailing_ws") | let g:vimskip_ignore_trailing_ws= 1 | en
+let g:vimskip_disable_default_maps      = get(g:, 'vimskip_disable_default_maps', 0)
+let g:vimskip_multiplier                = get(g:, 'vimskip_multiplier', 0.5)
+let g:vimskip_mode                      = get(g:, 'vimskip_mode', "normal")
+let g:vimskip_wraptocenter              = get(g:, 'vimskip_wraptocenter', 0)
+let g:vimskip_split_passthroughcenter   = get(g:, 'vimskip_split_passthroughcenter', 1)
+let g:vimskip_helix                     = get(g:, 'vimskip_helix', 0)
+let g:vimskip_ignore_initial_ws         = get(g:, 'vimskip_ignore_initial_ws', 1)
+let g:vimskip_ignore_trailing_ws        = get(g:, 'vimskip_ignore_trailing_ws', 1)
+let g:vimskip_mapforwardskip            = get(g:, 'vimskip_mapforwardskip', 's')
+let g:vimskip_mapbackwardskip           = get(g:, 'vimskip_mapbackwardskip', 'S')
+let g:vimskip_maptocenter               = get(g:, 'vimskip_maptocenter', 'gs')
+
+let modes = ["normal", "split", "fixed", "anti"]
+if !(index(modes, g:vimskip_mode) >= 0)
+    let g:vimskip_mode = "normal"
+end
 
 " ====[ Helpers ]====
 let s:factor = g:vimskip_multiplier
@@ -30,7 +38,7 @@ else
     let s:safeup = ""
     let s:safenext = 0
     let s:safeprevious = 0
-en
+end
 
 let s:left = "h"
 let s:right = "l"
@@ -38,80 +46,80 @@ let s:current = 0
 let s:switchmode = "normal"
 
 " ====[ Getters ]====
-fu! s:Cursor()
+function! s:Cursor()
     return getpos('.')[2]
-endf
+endfunction
 
-fu! s:Line(offset)
+function! s:Line(offset)
     return getline(line('.') + a:offset)
-endf
+endfunction
 
-fu! s:DistanceTo(destination)
+function! s:DistanceTo(destination)
     return abs(s:Cursor()-a:destination)
-endf
+endfunction
 
-fu! s:Scale(...)
+function! s:Scale(...)
     if a:0 > 1
         return float2nr(ceil(a:1 * 1.0 * a:2))
     else
         return float2nr(ceil(a:1 * 1.0 * s:factor))
-    en
-endf
+    end
+endfunction
 
-fu! s:BeginningOf(line)
+function! s:BeginningOf(line)
     if g:vimskip_ignore_initial_ws
         return match(a:line,'\S')+1
     else
         return 0
-    en
-endf
+    end
+endfunction
 
-fu! s:EndOf(line)
+function! s:EndOf(line)
     if g:vimskip_ignore_trailing_ws
         return strlen(substitute(a:line,'\s\+$','','g'))
     else
         return strlen(a:line)
-    en
-endf
+    end
+endfunction
 
-fu! s:CenterOf(line)
+function! s:CenterOf(line)
     let l:beginningofline = s:BeginningOf(a:line)
     return l:beginningofline + s:Scale(s:EndOf(a:line)-l:beginningofline, 0.5)
-endf
+endfunction
 
 " ====[ Setters ]====
 "          int     , str
-fu! s:Skip(distance, direction)
+function! s:Skip(distance, direction)
     execute "normal! ".string(a:distance).a:direction
-endf
+endfunction
 
-fu! s:ToCenter(...)
+function! s:ToCenter(...)
     execute "normal! 0".a:1
     call s:Skip(s:CenterOf(s:Line(s:current)), s:right)
-endf
+endfunction
 
-fu! s:Wrap(destination)
+function! s:Wrap(destination)
     if a:destination == "tobeginning"
         if g:vimskip_ignore_initial_ws
             execute "normal! ".s:safedown."^"
         else
             execute "normal! ".s:safedown."0"
-        en
+        end
     elseif a:destination == "toend"
         if g:vimskip_ignore_trailing_ws
             execute "normal! ".s:safeup."g_"
         else
             execute "normal! ".s:safeup."$"
-        en
+        end
     elseif a:destination == "tocenterfrombeginning"
         call s:ToCenter(s:safeup)
     else
         call s:ToCenter(s:safedown)
-    en
-endf
+    end
+endfunction
 
 " ====[ Normal Mode ]====
-fu! s:NormalForward()
+function! s:NormalForward()
     let l:dist = s:DistanceTo(s:EndOf(s:Line(s:current)))
     if l:dist
         call s:Skip(s:Scale(l:dist), s:right)
@@ -120,11 +128,11 @@ fu! s:NormalForward()
             call s:Wrap("tocenterfromend")
         else
             call s:Wrap("tobeginning")
-        en
-    en
-endf
+        end
+    end
+endfunction
 
-fu! s:NormalBackward()
+function! s:NormalBackward()
     let l:dist = s:DistanceTo(s:BeginningOf(s:Line(s:current)))
     if l:dist
         call s:Skip(s:Scale(l:dist), s:left)
@@ -133,12 +141,12 @@ fu! s:NormalBackward()
             call s:Wrap("tocenterfrombeginning")
         else
             call s:Wrap("toend")
-        en
-    en
-endf
+        end
+    end
+endfunction
 
 " ====[ Split Mode ]====
-fu! s:SplitForward()
+function! s:SplitForward()
     let l:cursor = s:Cursor()
     let l:center= s:CenterOf(s:Line(s:current))
 
@@ -154,18 +162,18 @@ fu! s:SplitForward()
                 call s:Wrap('tocenterfromend')
             else
                 call s:Wrap("tobeginning")
-            en
-        en
+            end
+        end
     else
         if g:vimskip_split_passthroughcenter
             call s:Skip(s:Scale(s:DistanceTo(s:EndOf(s:Line(s:current)))), s:right)
         else
             call s:Wrap("tobeginning")
-        en
-    en
-endf
+        end
+    end
+endfunction
 
-fu! s:SplitBackward()
+function! s:SplitBackward()
     let l:cursor = s:Cursor()
     let l:center= s:CenterOf(s:Line(s:current))
 
@@ -181,19 +189,19 @@ fu! s:SplitBackward()
                 call s:Wrap("tocenterfrombeginning")
             else
                 call s:Wrap("toend")
-            en
-        en
+            end
+        end
     else
         if g:vimskip_split_passthroughcenter
             call s:Skip(s:Scale(s:DistanceTo(s:BeginningOf(s:Line(s:current)))), s:left)
         else
             call s:Wrap("toend")
-        en
-    en
-endf
+        end
+    end
+endfunction
 
 " ====[ Antipodal Mode ]====
-fu! s:AntiForward()
+function! s:AntiForward()
     let l:cursor = s:Cursor()
     let l:center= s:CenterOf(s:Line(s:current))
 
@@ -204,7 +212,7 @@ fu! s:AntiForward()
         let l:beginningofline = s:BeginningOf(s:Line(s:safenext))
         if g:vimskip_helix
             let l:center = s:CenterOf(s:Line(s:safenext))
-        en
+        end
         let l:skipdist = s:Scale(l:distancetoend + (l:center - l:beginningofline))
 
         if l:skipdist <= l:distancetoend
@@ -214,13 +222,13 @@ fu! s:AntiForward()
                 call s:Wrap("tocenterfromend")
             else
                 call s:Wrap("tobeginning")
-            en
+            end
             call s:Skip(l:skipdist - l:distancetoend, s:right)
-        en
-    en
-endf
+        end
+    end
+endfunction
 
-fu! s:AntiBackward()
+function! s:AntiBackward()
     let l:cursor = s:Cursor()
     let l:center= s:CenterOf(s:Line(s:current))
 
@@ -231,7 +239,7 @@ fu! s:AntiBackward()
         let l:endofline = s:EndOf(s:Line(s:safeprevious))
         if g:vimskip_helix
             let l:center = s:CenterOf(s:Line(s:safeprevious))
-        en
+        end
         let l:skipdist = s:Scale(l:distancetobeginning + (l:endofline-l:center))
 
         if l:skipdist <= l:distancetobeginning
@@ -241,14 +249,14 @@ fu! s:AntiBackward()
                 call s:Wrap("tocenterfrombeginning")
             else
                 call s:Wrap("toend")
-            en
+            end
             call s:Skip(l:skipdist-l:distancetobeginning, s:left)
-        en
-    en
-endf
+        end
+    end
+endfunction
 
 " ====[ Fixed Skip Mode ]====
-fu! s:FixedForward()
+function! s:FixedForward()
     let l:line = s:Line(s:current)
     let l:skipdist = s:Scale(strlen(l:line))
     let l:distancetoend = s:DistanceTo(s:EndOf(l:line))
@@ -260,12 +268,12 @@ fu! s:FixedForward()
             call s:Wrap("tocenterfromend")
         else
             call s:Wrap("tobeginning")
-        en
+        end
         call s:Skip(l:skipdist - l:distancetoend, s:right)
-    en
-endf
+    end
+endfunction
 
-fu! s:FixedBackward()
+function! s:FixedBackward()
     let l:line = s:Line(s:current)
     let l:distancetobeginning = s:DistanceTo(s:BeginningOf(l:line))
     let l:skipdist = s:Scale(strlen(l:line))
@@ -275,45 +283,54 @@ fu! s:FixedBackward()
     else
         call s:Wrap("toend")
         call s:Skip(l:skipdist - l:distancetobeginning, s:left)
-    en
-endf
+    end
+endfunction
 
 " ====[ Dynamic Option Changing ]====
-fu! s:IncreaseMultiplier()
+function! s:IncreaseMultiplier()
     let s:factor += 0.05
     echo "vim-skip multiplier is now: ".string(s:factor)
-endf
+endfunction
 
-fu! s:DecreaseMultiplier()
+function! s:DecreaseMultiplier()
     let s:factor -= 0.05
     echo "vim-skip multiplier is now: ".string(s:factor)
-endf
+endfunction
 
-fu! s:VSMultiplier(value)
+function! s:VSMultiplier(value)
     let s:factor = str2float(a:value)
     echo "vim-skip multiplier is now: ".string(s:factor)
-endf
-command! -nargs=1 VSMultiplier call s:VSMultiplier(<f-args>)
+endfunction
 
-fu! s:SetMaps(...)
+function! s:SetMaps(...)
     if a:0
-        execute 'nmap s <Plug>'.toupper(a:1).'Forward'
-        execute 'nmap S <Plug>'.toupper(a:1).'Backward'
+        if !hasmapto('<Plug>'.toupper(a:1).'Forward')
+            silent! execute 'nmap '.g:vimskip_mapforwardskip.' <Plug>'.toupper(a:1).'Forward'
+        end
+
+        if !hasmapto('<Plug>'.toupper(a:1).'Backward')
+            silent! execute 'nmap '.g:vimskip_mapbackwardskip.'<Plug>'.toupper(a:1).'Backward'
+        end
     else
         if s:switchmode == "normal"
             s:switchmode = "split"
+            echo "Now in split mode"
         elseif s:switchmode == "split"
             s:switchmode = "anti"
+            echo "Now in anti mode"
         elseif s:switchmode == "anti"
             s:switchmode = "fixed"
+            echo "Now in fixed mode"
         elseif s:switchmode == "fixed"
             s:switchmode = "normal"
+            echo "Now in normal mode"
         else
-            s:switchmode = "fixed"
-        en
+            s:switchmode = "normal"
+            echo "Now in normal mode"
+        end
         call s:SetMaps(s:switchmode)
-    en
-endf
+    end
+endfunction
 
 " ====[ Bindings ]====
 nnoremap <silent> <Plug>ToCenter                :<C-u>call <SID>ToCenter('')<CR>
@@ -329,10 +346,14 @@ nnoremap <silent> <Plug>SwitchMode              :<C-u>call <SID>SetMaps()<CR>
 nnoremap <silent> <Plug>IncreaseMultiplier      :<C-u>call <SID>IncreaseMultiplier()<CR>
 nnoremap <silent> <Plug>DecreaseMultiplier      :<C-u>call <SID>DecreaseMultiplier()<CR>
 
-if !hasmapto('<Plug>ToCenter') && !g:vimskip_disable_default_maps
-    nmap gs <Plug>ToCenter
+command! -nargs=1 VSMultiplier call s:VSMultiplier(<f-args>)
+
+if !g:vimskip_disable_default_maps
+    if !hasmapto('<Plug>ToCenter')
+        silent! execute 'nmap '.g:vimskip_maptocenter.'<Plug>ToCenter'
+    end
     call s:SetMaps(g:vimskip_mode)
-en
+end
 
 
 
