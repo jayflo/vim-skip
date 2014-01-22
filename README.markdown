@@ -124,6 +124,7 @@ line quickly and slows down near the beginning/end of the line.
 * ``1 --S--> 1/2 --s--> 3/4``
 * ``anywhere --gs--> 1/2 --s--> 3/4``
 * ``1 --s--> 0`` and ``0 --S--> 1``, so that skipping forward through the end of the line wraps you to the beginning of the line (analagously for skipping backward through the beginning).
+
 Split
 -----
 
