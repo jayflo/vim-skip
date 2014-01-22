@@ -26,7 +26,7 @@ Press s once to get to here..\/   again...  \/ ...  \/ .....etc.
 
 ``gs`` moves your cursor to the center of the line.
 
-This plugin provides 3 other ways to skip around the current line, but this is the default.  Of course, You do not need to start from the beginning/end of the line; the binary skipping happens relative to the cursor.  You can also:
+This plugin provides 3 other ways to skip around the current line, but this is the default.  Of course, you do not need to start from the beginning/end of the line; the logarithmic skipping happens relative to the cursor.  You can also:
 
 1. move by thirds, fourths or any other fraction (default is halves, as above)
 2. choose to ignore indenting and trailing white space
