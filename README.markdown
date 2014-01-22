@@ -53,7 +53,7 @@ based on their own needs.  Don't get overwhelmed with the modes or options!  It
 is my intention to keep this skipping motion *quick* and *efficient*, while
 still providing enough versatility to fit your working style on many file types.
 
-Thought another way, whenever you would think about skipping rather than a ``w``, ``e``, ``b``, it hopes to provide a motion to get you where you want to go high probability.  To get you where you *exactly* want to go, you would just use ``/`` or ``?`` commands.  Vim-skip must be quicker than these to be efficient!
+Thought another way, whenever you would think about skipping rather than a using ``w``, ``e``, ``b`` sequence, vim-skip hopes to provide a motion to get you *very* close to where you want to go with high probability.  To get you where you *exactly* want to go, you would just use ``/`` or ``?`` commands.  Vim-skip must be quicker than these to be efficient!
 
 Installation
 ------------
