@@ -178,19 +178,19 @@ This mode moves the cursor through the ends of the lines *quickly* and slows
 near the center.  It receives its name from the following visual:
 
 ```
-                       Turning a line in a buffer into a circle by 
+                       Turning a line of a buffer into a circle by 
                        joining the beginning and end of the line, which
-                       become the north pole of the circle.  We then
+                       becomes the north pole of the circle.  We then
                        move the points we logarithmically skip toward to 
                        the south pole, then unwrap.  We now skip slowly 
                        toward the center!
 | = ends of line
-* = center of line          --|><|--             ---||---          Anti mode
+* = center of line          -->||<--             ---||---          Anti mode
                            /        \           /        \
- <|---*---|>      ---->   |          |   --->  |          |  ---> |-----<*>-----|
- ^         ^               \        /           \        /              ^ ^
- |         |                ---*----             ---<*>--               | |  
- |         |                                                            | |
+ |<---*--->|      ---->   |          |   --->  |          |  ---> |----->*<-----|
+  ^       ^                \        /           \        /              ^ ^
+  |       |                 ---*----             --->*<--               | |  
+  |       |                                                             | |
  a line in the buffer where the <,> mark points which we skip slowly toward in 
  normal and anti modes.
 ```
@@ -212,7 +212,7 @@ the circle) which is the center of the line!
     * beginning of the line + (length of second half of line), when the cursor
       lies in the first half of the line.
 
-Both skips are best understood using the circle analogy above still noting that
+Note that skipping backward (``S``) in the first half of the line is *not* considered skipping away from the center (likewise for ``s`` in the second half of the line).  In fact, you are skipping toward the center when you consider the end and beginning of the line to be connected.  These skips are best understood using the circle analogy above still noting that
 ``s`` skips counter-clockwise, ``S`` clockwise and that skips move half the arc
 length between the current position and the south pole (which is the center of the line).
 
@@ -232,7 +232,11 @@ Anti mode, on the other hand, has a hard time getting to the ends of the line
 (unless you commonly start from ``1/2`` and keep ``g:vimskip_multiplier=0.5``)
 where we already have ``$`` and ``0`` at our disposal.  Finding a personal "sweet spot" for
 ``g:vimskip_multiplier`` in this mode could make it the most efficient of the
-modes since it can be configured to have the cursor spend most of its time in the middle half of the line.  For example, ``g:vimskip_multiplier=0.75`` will *always* skip your cursor into the middle half ``[1/4,3/4]`` of the line.  In general, setting ``0.5 < g:vimskip_multiplier <= 0.75`` will produce the best results.
+modes since it can be configured to have the cursor spend most of its time in the middle half of the line.  For example
+* ``g:vimskip_multiplier=0.75`` will *always* skip your cursor into the middle half ``[1/4,3/4]`` of the line and
+* ``g:vimskip_multipler=0.66`` will *always* skip your cursor into the middle two thirds ``[1/6,5/6]`` of the line.
+
+In general, setting ``0.5 < g:vimskip_multiplier <= 0.75`` will produce the best results.
 
 Options
 =======
