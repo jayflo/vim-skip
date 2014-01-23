@@ -309,7 +309,7 @@ function! s:SetMaps(...)
         end
 
         if !hasmapto('<Plug>'.toupper(a:1).'Backward')
-            silent! execute 'nmap '.g:vimskip_mapbackwardskip.'<Plug>'.toupper(a:1).'Backward'
+            silent! execute 'nmap '.g:vimskip_mapbackwardskip.' <Plug>'.toupper(a:1).'Backward'
         end
     else
         if s:switchmode == "normal"
@@ -350,7 +350,7 @@ command! -nargs=1 VSMultiplier call s:VSMultiplier(<f-args>)
 
 if !g:vimskip_disable_default_maps
     if !hasmapto('<Plug>ToCenter')
-        silent! execute 'nmap '.g:vimskip_maptocenter.'<Plug>ToCenter'
+        silent! execute 'nmap '.g:vimskip_maptocenter.' <Plug>ToCenter'
     end
     call s:SetMaps(g:vimskip_mode)
 end
