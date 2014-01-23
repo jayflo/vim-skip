@@ -234,7 +234,7 @@ where we already have ``$`` and ``0`` at our disposal.  Finding a personal "swee
 ``g:vimskip_multiplier`` in this mode could make it the most efficient of the
 modes since it can be configured to have the cursor spend most of its time in the middle half of the line.  For example
 * ``g:vimskip_multiplier=0.75`` will *always* skip your cursor into the middle half ``[1/4,3/4]`` of the line and
-* ``g:vimskip_multipler=0.66`` will *always* skip your cursor into the middle two thirds ``[1/6,5/6]`` of the line.
+* ``g:vimskip_multiplier=0.66`` will *always* skip your cursor into the middle two thirds ``[1/6,5/6]`` of the line.
 
 In general, setting ``0.5 < g:vimskip_multiplier <= 0.75`` will produce the best results.
 
