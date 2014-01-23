@@ -1,85 +1,19 @@
 *vimskip.txt*
 
-|TLDR|
-|Intro|
 |Modes|
     |Normal|
     |Split|
     |Fixed|
     |Anti|
-|Options|
+|Skip-Options|
+|Other-Mappings|
 
-*TLDR*
-----
+Github Page
+-----------
+https://github.com/jayflo/vim-skip
 
-s - skips forward half the distance between the cursor and the end of the line.
-
-   cursor
----> movement of cursor after press of s
-
-Press s once to get to here..\/   again...  \/ ...  \/ .....etc.
-*---------------------------> * -----------> * ---> * ->
------#--########-###-----##################-----#####----  <--- a line in buffer
-
-
-S - skips backward half the distance between the cursor and the beginning of the line.
-
-    cursor
-<---- movement of cursor after press of S
-
-                          \/ Press S once from end of line
-* <- * <---- * <--------- * <----------------------------
------#--########-###-----##################-----#####----  <--- a line in buffer
-
-
-gs moves your cursor to the center of the line.
-
-This plugin provides 3 other ways to skip around the current line, but this is
-the default.  Of course, you do not need to start from the beginning/end of
-the line; the logarithmic skipping happens relative to the cursor.  You can
-also:
-
-move by thirds, fourths or any other fraction (default is halves, as above)
-choose to ignore indenting and trailing white space
-skip through one end of the line to wrap to the other
-skip through the end of the line to wrap to the center
-skip through the end of the line to wrap to the succeeding/preceeding line
-
-You can stack options 3,5 or 4,5 to, for example, wrap to the center of the
-succeeding line by skiping through the end of the current line.  This
-"logarithmic skipping" is the default functionality of vim-skip but perhaps
-not the most useful depending on the layout of files you commonly edit.  See
-the Modes section below for other behaviors.
- 
-
-*Intro*
------
-
-Vim-skip attempts to provide a "mid-range" movement, between the longer $,
-0 and the shorter w, W, e, E, b, B.  It is built to quickly move the cursor to
-parts of the line which can otherwise be difficult to get to, e.g. the middle
-half of the line.   It is more precise than 
-$, 0 while not filling the role of w, W, e, E,
-b, B.  These word/WORD text object motions are necessary and vim-skip *does not
-want toreplace them.  Instead, Vim-skip hopes to complement them by
-providing a fast way to get your cursor nearby any word on the line, no matter
-how long the line may be.  
-
-Though there are multiple options and modes, Vim-skip does not attempt to
-provide you many mid-range motions!  Rather, it strives to provide a minimal
-tool set allowing the user to tailor a single, efficient mid-range motion
-based on their own needs.  Don't get overwhelmed with the modes or options!  It
-is my intention to keep this skipping motion quick and efficient, while
-still providing enough versatility to fit your working style on many file types.
-
-Thought another way, whenever you would think about skipping rather than a
-using w, e, b sequence, vim-skip hopes to provide a motion to get you *very*
-close to where you want to go with high probability.  To get you where you
-*exactlywant to go, you would just use / or ? commands.  Vim-skip must be
-quicker than these to be efficient!
-
-Key Maps
---------
+Default Key Maps
+----------------
 
 The way you "skip" forward or backward depends on your mode (see below) and the
 options you have set.
@@ -89,13 +23,13 @@ S - skip backward
 gs - skip to center of the line
 
 *Modes*
-=====
+-----
 
 The distance your cursor skips always (except in fixed mode) depends on its
 position in the line.  Fractions will always represent the actual position of
 the cursor in the line as a fraction of the line's length, e.g. 0, 1/2
 and 1 mean the cursor is at the beginning, middle and end of the line
-respectively.  
+respectively.
 
 To give brief examples of how sequences like sS behave, I'll write
 0 --s--> 1/2 --S--> 1/4 to mean "first press s then S move your
@@ -171,7 +105,7 @@ Examples (when |g:vimskip_multiplier|=0.2)
 anywhere --gs--> 1/2 --s--> 7/10
 
 *Anti*
-----
+-----
 
 This mode moves the cursor through the ends of the lines quickly and slows
 near the center.  It receives its name from the following visual:
@@ -248,8 +182,8 @@ thirds [1/6,5/6] of the line.
 In general, setting 0.5 < |g:vimskip_multiplier| <= 0.75 will produce the best
 results.
 
-Options
-=======
+*Skip-Options*
+============
 
  *g:vimskip_disable_default_maps* : set to 1 to not use the default key
  mappings (s, S, gs).  Default 0.
@@ -288,17 +222,29 @@ Options
  *g:vimskip_ignore_trailing_ws* : Set to 0 to allow jumping into trailing
  whitespace.  Default 1.
 
-Other things you can bind
--------------------------
-Map these using, e.g. nmap <Plug>SwitchMode <F1>.
+*Other-Mappings*
+--------------
+Map these using, e.g. nmap <F1> <Plug>SwitchMode
+
 <Plug>SwitchMode: Will cycle you through the different modes.
+
 <Plug>IncreaseMultiplier: Increase g:vimskip_multiplier by 0.05.
+
 <Plug>DecreaseMultiplier: Decrease g:vimskip_multiplierby 0.05.
+
 VSMultiplier(multiplier): Call this from the command line to set
 g:vimskip_multipler to the value given by multiplier.
 
 These can help find a good multiplier to fit what "mid-range" means to YOU.
 Also, as different file types can have very different layouts, if you so
 choose, you can switch multipliers/modes to best fit your situation!
+
+You can bind any skip forward/backward function by capitalizing the name of
+the mode proceeded by 'Forward' or 'Backward'.  For example
+
+nmap {key} <Plug>NORMALForward
+
+nmap {key} <Plug>ANTIBackward
+
 
 

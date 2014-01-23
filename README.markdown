@@ -269,7 +269,7 @@ Options
 
 Other things you can bind
 -------------------------
-Map these using, e.g. ``nmap <Plug>SwitchMode <F1>``.
+Map these using, e.g. ``nmap <F1> <Plug>SwitchMode``.
 * ``<Plug>SwitchMode``: Will cycle you through the different modes.
 * ``<Plug>IncreaseMultiplier``: Increase ``g:vimskip_multiplier`` by ``0.05``.
 * ``<Plug>DecreaseMultiplier``: Decrease ``g:vimskip_multiplier``by ``0.05``.
