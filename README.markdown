@@ -76,15 +76,24 @@ a)      |--------------------------------------------|            # = non-whites
 b) |-------------------------------------------------|            _ = whitespace
 c)      |--------------------------------------------------|
 d) |____#__#######_##_#########_##################_###_____| <---- a line in buffer
-
-
-    g:vimskip_ignore_initial_ws |  g:vimskip_ignore_trailing_ws
-  +------------------------------------------------------------
-a |             1               |             1
-b |             0               |             1
-c |             1               |             0
-d |             0               |             0
 ```
+<table>
+  <tr>
+    <th></th><th>g:vimskip_ignore_initial_ws</th><th>g:vimskip_ignore_trailing_ws</th>
+  </tr>
+  <tr>
+    <td>a)</td><td>1</td><td>1</td>
+  </tr>
+  <tr>
+    <td>b)</td><td>0</td><td>1</td>
+  </tr>
+  <tr>
+    <td>c)</td><td>1</td><td>0</td>
+  </tr>
+  <tr>
+    <td>d)</td><td>0</td><td>0</td>
+  </tr>
+</table>
 
 Key Maps
 --------
