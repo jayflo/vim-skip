@@ -1,6 +1,10 @@
 Vim Skip
 ========
 
+New
+---
+* [Vertical Mode](https://github.com/jayflo/vim-skip#vertical)
+
 TLDR
 ----
 
@@ -238,8 +242,20 @@ modes since it can be configured to have the cursor spend most of its time in th
 
 In general, setting ``0.5 < g:vimskip_multiplier <= 0.75`` will produce the best results.
 
+Vertical
+--------
+
+This is normal mode except that you skip vertically as opposed to horizontally.  These skips respect ``scrolloff`` (for logistical reasons) so that if ``&scrolloff > 0``, you will *not* be able to skip to the last line on the screen.  The "top" and "bottom" lines on the screen, referred to below, are the same as achieved by the ``H`` and ``L`` commands (aka the (first/last line) +/- &scrolloff).  There are no default maps, but the relevant functions are
+
+* ``<Plug>NORMALDown`` skips half the distance between the cursor line and the bottom line on the screen.
+* ``<Plug>NORMALUp`` skips half the distance between the cursor line and the top line on the screen.
+* ``<Plug>ToggleVertical`` will toggle the current (horizontally moving) mode with vertical mode.
+
+To map these put, for example, ``nmap <F1> <Plug>ToggleVertical`` in your ``.vimrc``.  See also ``g:vimskip_wraptomiddleline``.
+
 Options
 =======
+
 * ``g:vimskip_disable_default_maps``: set to 1 to not use the default key
   mappings (``s``, ``S``, ``gs``).  Default 0.
 * ``g:vimskip_mapforwardskip``: key to map forward skip.  Default 's'.
@@ -254,6 +270,7 @@ Options
 * ``g:vimskip_wraptocenter``: Set to 1 to wrap to the center of line rather than
   beginning (resp. end) of line when skipping forward (resp. backward) through
   the end (resp. beginning) of line.  Default 0.
+* ``g:vimskip_wraptomiddleline`` : Set to 1 to wrap to the middle line (equivalent to line moved to by ``M``) when skipping vertically through the top/bottom line of the screen.  Default 0.
 * ``g:vimskip_split_passthroughcenter``: (for split mode)  Set to 0 to keep the
   cursor from passing through the center by repeatedly tapping ``s`` or ``S``.
   Default 1.
@@ -267,16 +284,30 @@ Options
 * ``g:vimskip_ignore_trailing_ws``: Set to 0 to allow jumping into trailing
   whitespace.  Default 1.
 
-Other things you can bind
--------------------------
+Full Function List
+------------------
+
 Map these using, e.g. ``nmap <F1> <Plug>SwitchMode``.
+
 * ``<Plug>SwitchMode``: Will cycle you through the different modes.
+* ``<Plug>ToggleVertical`` will toggle the current (horizontally moving) mode with vertical mode.
 * ``<Plug>IncreaseMultiplier``: Increase ``g:vimskip_multiplier`` by ``0.05``.
 * ``<Plug>DecreaseMultiplier``: Decrease ``g:vimskip_multiplier``by ``0.05``.
-* ``VSMultiplier(multiplier)``: Call this from the command line to set ``g:vimskip_multipler`` to the value given by ``multiplier``.
+* ``VSMultiplier(x)``: Call this from the command line to set ``g:vimskip_multipler`` to the value given by the float ``0 < x < 1``.
 
-These can help find a good multiplier to fit what "mid-range" means to YOU.  Also, as different file types can have very different layouts, if you so choose, you can switch multipliers/modes to best fit your situation!
+The following are all the modes' skip functions. 
 
+* ``<Plug>ToCenter``
+* ``<Plug>NORMALForward``
+* ``<Plug>NORMALBackward``
+* ``<Plug>ANTIForward``
+* ``<Plug>ANTIBackward``
+* ``<Plug>SPLITForward``
+* ``<Plug>SPLITBackward``
+* ``<Plug>FIXEDForward``
+* ``<Plug>FIXEDBackward``
+* ``<Plug>NORMALDown``
+* ``<Plug>NORMALUp``
 
 Outro
 =====
@@ -295,13 +326,14 @@ out of my reach!). =)
 Changelog
 =========
 * **V 0.1** (1/20/2014): Initial working commit.
-    * ToDo:
-        * Comment the script.
-        * Make vim help doc different from this readme.
-        * Allow different multipliers for skipping forwards and backwards.
-          Easy, will do if requested.
-        * Due to rounding, skipping "at center" is unpredictable.  Try to clean
-          up this up.
+* **V 0.2** (1/23/2014): Added Vertical Mode.
+* ToDo:
+    * Comment the script.
+    * ~~Make vim help doc different from this readme.~~
+    * Allow different multipliers for skipping forwards and backwards.
+      Easy, will do if requested.
+    * Due to rounding, skipping "at center" is unpredictable.  Try to clean
+      up this up.
 
 
 
