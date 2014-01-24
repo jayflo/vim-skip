@@ -340,6 +340,7 @@ Changelog
 * **V 0.2** (1/23/2014): Added Vertical Mode.
 * ToDo:
     * Comment the script.
+    * Update the help doc to include vertical mode.
     * ~~Make vim help doc different from this readme.~~
     * Allow different multipliers for skipping forwards and backwards.
       Easy, will do if requested.
