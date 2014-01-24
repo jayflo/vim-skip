@@ -10,22 +10,24 @@ TLDR
 
 ``s`` - skips *forward* half the distance between the cursor and the end of the line.
 ```
-*    cursor
----> movement of cursor after press of s
+*    cursor                                 ___ white space
+---> movement of cursor after press of s    ### non-whitespace
+
 
 Press s once to get to here..\/   again...  \/ ...  \/ .....etc.
-*---------------------------> * -----------> * ---> * ->
-|-----#--########-###-----##################-----#####----|  <--- a line in buffer
+*---------------------------> * -----------> * ---> * -> *
+|_____#__########_###_____##################_____#####____|  <--- a line in buffer
 ```
 
 ``S`` - skips *backward* half the distance between the cursor and the beginning of the line.
 ```
-*     cursor
-<---- movement of cursor after press of S
+*    cursor                                 ___ white space
+---> movement of cursor after press of s    ### non-whitespace
+
 
                           \/ Press S once from end of line
  * <- * <---- * <--------- * <-----------------------------
-|-----#--########-###-----##################-----#####----|  <--- a line in buffer
+|_____#__########_###_____##################_____#####____|  <--- a line in buffer
 ```
 
 ``gs`` moves your cursor to the center of the line.
