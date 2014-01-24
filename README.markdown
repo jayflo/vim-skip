@@ -187,7 +187,7 @@ near the center.  It receives its name from the following visual:
 | = ends of line
 * = center of line          -->||<--             ---||---          Anti mode
                            /        \           /        \
- |<---*--->|      ---->   |          |   --->  |          |  ---> |----->*<-----|
+ |<---*--->|      ===>    |          |   ===>  |          |  ===> |----->*<-----|
   ^       ^                \        /           \        /              ^ ^
   |       |                 ---*----             --->*<--               | |  
   |       |                                                             | |
