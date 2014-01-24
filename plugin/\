@@ -42,7 +42,7 @@ else
 end
 
 let s:switchmode = "normal"
-let s:vertmode = 0
+let s:vertmodeon = 0
 
 let s:left = "h"
 let s:right = "l"
@@ -354,16 +354,7 @@ function! s:VSMultiplier(value)
 endfunction
 
 function! s:ToggleVertical()
-    if s:vertmode
-        call s:SetMaps(s:switchmode)
-        echo "Now skipping horizontally"
-        let s:vertmode = 0
-    else
-        silent! execute 'nmap '.g:vimskip_mapforwardskip.' <Plug>NORMALDown'
-        silent! execute 'nmap '.g:vimskip_mapforwardskip.' <Plug>NORMALUp'
-        echo "Now skipping vertically"
-        let s:vertmode = 1
-    end
+
 endfunction
 
 function! s:SetMaps(...)
