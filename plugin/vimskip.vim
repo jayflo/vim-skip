@@ -359,8 +359,8 @@ function! s:ToggleVertical()
         echo "Now skipping horizontally"
         let s:vertmode = 0
     else
-        silent! execute 'nmap '.g:vimskip_mapforwardskip.' <Plug>NORMALDown'
-        silent! execute 'nmap '.g:vimskip_mapforwardskip.' <Plug>NORMALUp'
+        silent! execute 'nmap '.g:vimskip_mapforwardskip.' <Plug>(SkipNORMALDown)'
+        silent! execute 'nmap '.g:vimskip_mapforwardskip.' <Plug>(SkipNORMALUp)'
         echo "Now skipping vertically"
         let s:vertmode = 1
     end
@@ -368,12 +368,14 @@ endfunction
 
 function! s:SetMaps(...)
     if a:0
-        if !hasmapto('<Plug>'.toupper(a:1).'Forward')
-            silent! execute 'nmap '.g:vimskip_mapforwardskip.' <Plug>'.toupper(a:1).'Forward'
+        if !hasmapto('<Plug>(Skip'.toupper(a:1).'Forward)')
+        \ && empty(maparg(g:vimskip_mapforwardskip, 'n'))
+            silent! execute 'nmap '.g:vimskip_mapforwardskip.' <Plug>(Skip'.toupper(a:1).'Forward)'
         end
 
-        if !hasmapto('<Plug>'.toupper(a:1).'Backward')
-            silent! execute 'nmap '.g:vimskip_mapbackwardskip.' <Plug>'.toupper(a:1).'Backward'
+        if !hasmapto('<Plug>(Skip'.toupper(a:1).'Backward)')
+        \ && empty(maparg(g:vimskip_mapbackwardskip, 'n'))
+            silent! execute 'nmap '.g:vimskip_mapbackwardskip.' <Plug>(Skip'.toupper(a:1).'Backward)'
         end
     else
         if s:switchmode == "normal"
@@ -397,27 +399,27 @@ function! s:SetMaps(...)
 endfunction
 
 " ====[ Bindings ]====
-nnoremap <silent> <Plug>ToCenter                :<C-u>call <SID>ToCenter('')<CR>
-nnoremap <silent> <Plug>NORMALForward           :<C-u>call <SID>NormalForward()<CR>
-nnoremap <silent> <Plug>NORMALBackward          :<C-u>call <SID>NormalBackward()<CR>
-nnoremap <silent> <Plug>ANTIForward             :<C-u>call <SID>AntiForward()<CR>
-nnoremap <silent> <Plug>ANTIBackward            :<C-u>call <SID>AntiBackward()<CR>
-nnoremap <silent> <Plug>SPLITForward            :<C-u>call <SID>SplitForward()<CR>
-nnoremap <silent> <Plug>SPLITBackward           :<C-u>call <SID>SplitBackward()<CR>
-nnoremap <silent> <Plug>FIXEDForward            :<C-u>call <SID>FixedForward()<CR>
-nnoremap <silent> <Plug>FIXEDBackward           :<C-u>call <SID>FixedBackward()<CR>
-nnoremap <silent> <Plug>NORMALUp                :<C-u>call <SID>NormalUp()<CR>
-nnoremap <silent> <Plug>NORMALDown              :<C-u>call <SID>NormalDown()<CR>
-nnoremap <silent> <Plug>SwitchMode              :<C-u>call <SID>SetMaps()<CR>
-nnoremap <silent> <Plug>ToggleVertical          :<C-u>call <SID>ToggleVertical()<CR>
-nnoremap <silent> <Plug>IncreaseMultiplier      :<C-u>call <SID>IncreaseMultiplier()<CR>
-nnoremap <silent> <Plug>DecreaseMultiplier      :<C-u>call <SID>DecreaseMultiplier()<CR>
+nnoremap <silent> <Plug>(SkipToCenter)           :<C-u>call <SID>ToCenter('')<CR>
+nnoremap <silent> <Plug>(SkipNORMALForward)      :<C-u>call <SID>NormalForward()<CR>
+nnoremap <silent> <Plug>(SkipNORMALBackward)     :<C-u>call <SID>NormalBackward()<CR>
+nnoremap <silent> <Plug>(SkipANTIForward)        :<C-u>call <SID>AntiForward()<CR>
+nnoremap <silent> <Plug>(SkipANTIBackward)       :<C-u>call <SID>AntiBackward()<CR>
+nnoremap <silent> <Plug>(SkipSPLITForward)       :<C-u>call <SID>SplitForward()<CR>
+nnoremap <silent> <Plug>(SkipSPLITBackward)      :<C-u>call <SID>SplitBackward()<CR>
+nnoremap <silent> <Plug>(SkipFIXEDForward)       :<C-u>call <SID>FixedForward()<CR>
+nnoremap <silent> <Plug>(SkipFIXEDBackward)      :<C-u>call <SID>FixedBackward()<CR>
+nnoremap <silent> <Plug>(SkipNORMALUp)           :<C-u>call <SID>NormalUp()<CR>
+nnoremap <silent> <Plug>(SkipNORMALDown)         :<C-u>call <SID>NormalDown()<CR>
+nnoremap <silent> <Plug>(SkipSwitchMode)         :<C-u>call <SID>SetMaps()<CR>
+nnoremap <silent> <Plug>(SkipToggleVertical)     :<C-u>call <SID>ToggleVertical()<CR>
+nnoremap <silent> <Plug>(SkipIncreaseMultiplier) :<C-u>call <SID>IncreaseMultiplier()<CR>
+nnoremap <silent> <Plug>(SkipDecreaseMultiplier) :<C-u>call <SID>DecreaseMultiplier()<CR>
 
 command! -nargs=1 VSMultiplier call s:VSMultiplier(<f-args>)
 
 if !g:vimskip_disable_default_maps
-    if !hasmapto('<Plug>ToCenter')
-        silent! execute 'nmap '.g:vimskip_maptocenter.' <Plug>ToCenter'
+    if !hasmapto('<Plug>(SkipToCenter)')
+        silent! execute 'nmap '.g:vimskip_maptocenter.' <Plug>(SkipToCenter)'
     end
     call s:SetMaps(g:vimskip_mode)
 end
