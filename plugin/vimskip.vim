@@ -369,10 +369,12 @@ endfunction
 function! s:SetMaps(...)
     if a:0
         if !hasmapto('<Plug>(Skip'.toupper(a:1).'Forward)')
+        \ && empty(maparg(g:vimskip_mapforwardskip, 'n'))
             silent! execute 'nmap '.g:vimskip_mapforwardskip.' <Plug>(Skip'.toupper(a:1).'Forward)'
         end
 
         if !hasmapto('<Plug>(Skip'.toupper(a:1).'Backward)')
+        \ && empty(maparg(g:vimskip_mapbackwardskip, 'n'))
             silent! execute 'nmap '.g:vimskip_mapbackwardskip.' <Plug>(Skip'.toupper(a:1).'Backward)'
         end
     else
